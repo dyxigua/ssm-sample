@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- ssm整合：  即将mybatis的东西交给spring ,有两样东西，DataSource和*mapper.xml,
+		而这两样东西又同时需要交给mybatis的核心类sqlsessionfactorybean
+		
+		，然后将其核心类交给spring就可以了。
+		-->
+		
+	<!-- 1、数据源 -->
+	<!--加载数据源 的属性文件：类config  -->
+	<!-- <bean  id="config" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath:db.properties</value>
+			</array>
+		</property>
+	</bean> -->
+	
+	<bean  id="config" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath:mysqldb.properties</value>
+			</array>
+		</property>
+	</bean>
+	<!-- 等同与上边这句 -->
+	<!-- <context:property-placeholder location="classpath:db.properties"/> -->
+	
+	
+	<!-- 配置数据源:BasicDataSourceFactory -->
+	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${url}"></property>
+		<property name="username" value="${username}"></property>
+		<property name="password" value="${password}"></property>
+	</bean> -->
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		p:url = "${mysql.jdbcurl}" p:driverClassName="${mysql.driverclass}"
+		p:username = "${mysql.user}" p:password="${mysql.password}"
+		p:maxActive="${mysql.maxActive}" p:maxIdle="${mysql.maxIdle}" 
+		p:maxWait="${mysql.maxWait}"/>
+	
+	<!-- 把数据源和配置文件通过属性注入给mybatis的核心类sqlsessionfactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+			<!-- 2.mapper.xml路径，因为会在src目录下去找对应的java文件，不会编译xml配置文件，所以如果放在这里需要指明是在类路径下  -->
+		<property name="mapperLocations" value="classpath:com/mhj/mapper/*.xml"></property>
+	</bean>
+	
+	<!-- spring整合mybatis -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	<!-- 将SqlSessionFactoryBean交给spring就可以了，通过下边这句话把 SqlSessionFactoryBean交给spring-->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+		<!-- 同时生成动态代理对象，通过下边这句话，把mapper包里的接口通过反射都生成动态代理对象，对象名默认为接口名，但首字母小写 -->
+		<property name="basePackage" value="com.mhj.mapper"></property>
+	</bean>
+	
+	<!-- ==========================各种注入========= -->
+	<!-- 给service注入dao ,可以通过这样的方式，也可以通过autowired更方便-->
+	<bean id="studentService" class="com.mhj.service.impl.StudentServiceImpl">
+		<property name="studentMapper" ref="studentMapper"></property>
+	</bean>
+	
+	<!-- 给Controller注入Service ,会个@Controller冲突，然后报空指针
+	 <bean id="studentController" class="com.mhj.controller.StudentController">
+	 	<property name="studentService" ref="studentService"></property>
+	 </bean>
+	-->
+</beans>
