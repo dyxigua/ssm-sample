@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">   
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css"> 
+<link rel="stylesheet" type="text/css" href="icons/iconextension.css"> 
+<script type="text/javascript" src="easyui/jquery.min.js"></script>   
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script> 
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+$(function(){
+	//加载树形菜单
+	$("#khgl_tree").tree({
+		url:"tree.json",
+		loadFilter:function(data){
+			//List<User>  --> json
+			//把data数据格式 转换成 tree要求的格式
+			$(data).each(function(i,o){
+				//alert("一级text:"+o.text);
+				$(o.children).each(function(j,k){
+					//alert("二级text:"+k.text)
+				})
+			})
+			return data;
+		}
+	})
+	//加载表格  每次发起分页要求，自动传递参数 page: 跳转到第几页  rows: 每页显示条数
+	//select * from table limit (page-1))*rows,rows
+	$("#gc_datagrid").datagrid({
+		url:"datagrid.json",
+		loadFilter:function(data){
+			//必须返回包含'total'和'rows'属性的标准数据对象。
+			return data;
+		}
+	})
+})
+</script>
+<div class="easyui-layout" data-options="fit:true">
+	<div data-options="region:'west',title:'客户管理'" style="width:180px;">
+		<ul id="khgl_tree"></ul> 
+	</div>
+	<div data-options="region:'center',title:'工程管理'">
+		<table id="gc_datagrid" class="easyui-datagrid" 
+		data-options="singleSelect:true,pageSize:20,fit:true,fitColumns:true,pagination:true">   
+		    <thead>   
+		        <tr>   
+		        	<th data-options="field:'ck',checkbox:true,formatter:function(value,row,index){alert(1);alert(row.ck)}"></th>
+		            <th data-options="field:'code'">编码</th>   
+		            <th data-options="field:'name'">名称</th>   
+		            <th data-options="field:'price'">价格</th>   
+		        </tr>   
+		    </thead>   
+		</table>  		
+	</div>
+</div>
+</body>
+</html>

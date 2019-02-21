@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">   
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">  
+<style tyle="text/stylesheet">
+	#div1{
+		height:200px;
+		width:200px;
+		background:red;
+	}
+</style> 
+<script type="text/javascript" src="easyui/jquery.min.js"></script>   
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script> 
+<script type="text/javascript">
+	$(function(){
+		//js动态创建easyUI组件对象
+		$("#div1").draggable({
+			//属性
+			revert:true,
+			cursor:"pointer",
+			//事件
+			onBeforeDrag:function(e){
+				if(e.pageX > 100){
+					console.log("不可拖动");
+					return false;//取消onDrag事件触发
+				}
+				console.log("可以拖动");
+			},
+			onDrag:function(e){
+				console.log("正在拖动");
+				/* console.log(e.pageX); */
+			},
+			onStopDrag:function(){
+				//方法调用
+				$("#div1").draggable("disable");
+			}
+		});
+	})
+</script>
+</head>
+<body>
+<div id="div1">
+</div>
+
+</body>
+</html>

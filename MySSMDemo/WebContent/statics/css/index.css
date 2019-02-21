@@ -1,0 +1,19 @@
+.easyui-accordion ul{
+	list-style-type:none;
+	padding:0px;
+	margin:0px;
+}
+.easyui-accordion ul li{
+	margin:5px;
+	line-height:24px;
+}
+.easyui-accordion ul li div{
+	border:1px solid #99BBE8;
+	background:#E0ECFF;
+	cursor:default;
+}
+.easyui-accordion ul li div:hover{
+	border:1px solid #99BBE8;
+	background:#E0ECFF;
+	cursor:pointer;
+}

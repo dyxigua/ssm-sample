@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sys.dao.KhglDao"><!-- KhglDao路径 -->
+	<!-- 接口中的方法名作为id  -->
+	<select id="getKhgls" resultType="Khgl">
+		select * from khmc
+	</select>
+	<!-- 工程信息 -->
+	<resultMap id="gcmcVo" type="com.sys.vo.GcmcVo">
+		<id column="gcmc_id" property="gcmc_id"></id>
+		<result column="gcmc_name" property="gcmc_name"/>
+		<!-- 一对一关系 -->
+		<association property="khgl" javaType="Khgl">
+			<id column="khmc_id" property="khmc_id"></id>
+			<result column="khmc_name" property="khmc_name"/>
+		</association>
+	</resultMap>
+	<!-- 查询用户的工程信息 -->
+	<select id="getGcmcXX" resultMap="gcmcVo" parameterType="int">
+		SELECT g.gcmc_id,g.gcmc_name,k.khmc_id,k.khmc_name FROM gcmc g,khmc k 
+		WHERE g.khmc_id = k.khmc_id 
+		<if test='_parameter != 0'>
+			AND k.khmc_id = #{id}
+		</if>
+	</select>
+	<!-- 删除工程信息 -->
+	<delete id="delGcxx">
+		delete FROM gcmc where gcmc_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>
